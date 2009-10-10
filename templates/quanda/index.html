@@ -1,0 +1,140 @@
+{% extends "layout/right_column.html" %}
+
+{% load quanda %}
+
+{% block css %}
+<style type='text/css'>
+#quanda_main_box {
+    border: 1px solid #000000;
+    margin: auto;
+    padding: 5px;
+    width: 410px;
+}
+#quanda_ask {
+    border-right: 1px dotted #cccccc;
+    float: left;
+    padding-right: 5px;
+    width: 195px;
+}
+#quanda_quicksearch {
+    float: right;
+    margin-left: 0px;
+    width: 200px;
+    
+}
+#quanda_panels {
+    !border: 1px solid #000000;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    width: 615px;
+}
+#quanda_panels div {
+    padding: 0 5px 0 5px;
+    float: left;
+    width: 194px;
+}
+#quanda_panels h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+#quanda_panel_middle_column {
+    border-left: 1px dotted #cccccc;    
+    border-right: 1px dotted #cccccc;
+}
+</style>
+{% endblock %}
+
+{% block body_content %}
+
+<p>
+    {% if user.is_authenticated %}
+        <a href="{% url quanda_public_profile user.username %}">{{ user.username }}</a> &bull; {{ user.username|rep }}
+        | <a href="/accounts/logout/">logout</a>
+        {% if user.is_staff %}
+            | <a href="{% url quanda_tags_admin %}">manage tags</a>
+        {% endif %}
+    {% else %}
+        <a href="/accounts/login/">login</a>
+        | <a href="/accounts/register/">sign up</a>
+    {% endif %}
+</p>
+
+<div id='quanda_main_box'>
+    <div id="quanda_quicksearch">
+        <p>Search questions and answers:</p>
+        <form action="{% url quanda_search %}" method="post">
+            <input type='text' name='query' />
+            <input type='submit' value='Search' />
+        </form>
+    </div>
+    <div id="quanda_ask">
+        <p><a href="{% url quanda_question_create %}">Ask a question</a></p>
+        
+        <p><i>Ask quanda a question. You don't even need to register!</i></p>
+    </div>    
+    <div style='clear: both;'></div>
+</div>
+
+<div id="quanda_panels">
+    <div>
+        <h2>Recent Questions</h2>
+        {% for recent_question in recent_questions %}
+            <p>
+                <a href="{% url quanda_question_read recent_question.id %}">
+                    {{ recent_question.title }}
+                </a>
+            </p>
+        {% endfor %}
+    </div>
+    <div id='quanda_panel_middle_column'>
+        <h2>Top Questions</h2>
+        {% for top_question in top_questions %}
+            <p>
+                {{ top_question.score }} -
+                <a href="{% url quanda_question_read top_question.question.id %}">
+                    {{ top_question.question.title }}
+                </a>
+            </p>
+        {% endfor %}
+    </div>
+    <div>
+        <h2>Answers for you:</h2>
+        {% if user.is_authenticated %}
+            {% for answer in your_answers %}
+            {% empty %}
+                <i>There are no answers to your questions at this time</i>
+            {% endfor %}
+        {% else %}
+            <i>Please log in to see the answers to your questions.</i>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block right_column %}
+
+<div class='column_block'>
+    <h1>Featured Questions</h1>
+    {% if user.is_staff %}<p><a href="">manage featured</a></p>{% endif %}
+    <ul>
+    {% for question in featured_question %}
+        <li>{{ question }}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div class='column_block'>
+    
+    <i>
+        <p>What is Quanda?</p>
+        <p>Quanda is a community-driven question and answer
+        framework. It is open source and written as a django reusable
+        application. <a href="">Quanda github page</a>.</p>
+    </i>
+    
+</div>
+
+{% endblock %}
+

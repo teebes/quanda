@@ -1,0 +1,28 @@
+{% extends "layout/no_columns.html" %}
+
+{% block body_content %}
+
+<p><a href="{% url quanda_index %}">back</a></p>
+
+<p>Ask a question:</p>
+
+<table>
+<form action="" method="post">
+    {{ form.as_table }}
+
+    {% comment %}
+    <tr>
+        <td>Tags:</td>
+        <td>
+            {% for tag in tags %}
+                {{ tag.title }}: <input type='checkbox' name='tags' value='{{ tag.id }}' /><br />
+            {% endfor %}
+        </td>
+    </tr>
+    {% endcomment %}
+
+    <tr><td></td><td><input type='submit' value='Ask Question' /></td></tr>
+</form>
+</table>
+
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "layout/right_column.html" %}
+
+{% load quanda %}
+
+{% block css %}
+<style type='text/css'>
+#quanda_question_box {
+    background: #f1f1ff;
+    border: 1px solid #cccccc;
+    margin-bottom: 15px;
+    padding: 5px;
+}
+#quanda_question_box div {
+    /*
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 5px;
+    */
+}
+.quanda_answer_box {
+    background: #f5f5f5;
+    border: 1px solid #cccccc;
+    margin: 0 0 15px 30px;
+    padding: 5px;
+}
+#quanda_chosen_answer_box {
+    background: #f6fff6;
+    border: 1px solid #33aa33;
+    margin: 0 0 15px 30px;
+    padding: 5px;    
+}
+#quanda_msg {
+    border: 1px dotted red;
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 400px;
+}
+.active {
+    color: black;
+}
+.quanda_score {
+    font-size: 120%;
+}
+</style>
+{% endblock %}
+
+{% block body_content %}
+
+<p>
+    <a href="{% url quanda_index %}">back</a>
+    {% ifequal question.author user %}
+        | <a href="{% url quanda_question_edit question.id %}">edit question</a>
+    {% endifequal %}
+</p>
+
+{% if msg %}<div id="quanda_msg">{{ msg }}</div>{% endif %}
+
+<div id="quanda_question_box">
+    <h2>
+        <span class='quanda_score'>{{ question.get_score }}</span>
+        &bull; {{ question.title }}
+    </h2>
+    <p>
+        {{ question.get_posted_date }} - by
+        <a href="{% url quanda_public_profile question.author.username %}">
+            {{ question.author.username }}
+        </a>
+        (rep: {{ question.author.username|rep }}) -
+        {% ifequal user_question_previous_vote 1 %} voted up
+        {% else %} <a href="{% url quanda_question_vote_up question.id %}">vote up</a>
+        {% endifequal %}
+        |
+        {% ifequal user_question_previous_vote -1 %} voted down
+        {% else %} <a href="{% url quanda_question_vote_down question.id %}">vote down</a>       
+        {% endifequal %}
+    </p>
+    
+    <div>
+        {{ question.question_text }}
+    </div>
+</div>
+
+{% for answer in answers %}
+<div {% if answer.user_chosen %}id="quanda_chosen_answer_box"{% endif %} class='quanda_answer_box'>
+    <p>
+        <span class='quanda_score'>{{ answer.get_score }}</span> &bull;
+        {{ answer.get_posted_date }} - by
+        {% ifequal answer.author.username 'anonymous_user' %}
+            <i>anonymous</i>
+        {% else %}
+            <a href="{% url quanda_public_profile answer.author.username %}">
+                {{ answer.author.username }}
+            </a>
+            (rep: {{ answer.author.username|rep }}) -
+        {% endifequal %}
+        
+        {% ifequal answer.user_prev_vote 1 %} voted up
+        {% else %} <a href="{% url quanda_answer_vote_up answer.id %}">vote up</a>
+        {% endifequal %}
+        |
+        {% ifequal answer.user_prev_vote -1 %} voted down
+        {% else %} <a href="{% url quanda_answer_vote_down answer.id %}">vote down</a>
+        {% endifequal %}
+
+        {% ifequal user question.author %}
+            {% if not answer.user_chosen %}
+                - <a href="{% url quanda_pick_answer answer.id %}">pick this answer</a>
+            {% endif %}
+        {% endifequal %}
+    </p>
+    <p> {{ answer.answer_text }}</p>
+</div>
+{% endfor %}
+
+<form action="" method="post">
+    <table>
+        {{ answer_form.as_table }}
+        <tr><td></td><td><input type='submit' value='Answer Question' /></td></tr>
+    </table>
+</form>
+
+{% endblock %}
+
+{% block right_column %}
+<div class='column_block'>
+    <h1>Related questions:</h1>
+    
+    <ul>
+    {% for question in related_questions %}
+        <li><a href="{{ question.get_absolute_url }}">{{ question.title }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+{% comment %}
+        tags:
+        {% for tag in question.tags.all %}
+        {{ tag.title }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+{% endcomment %}
+{% endblock %}

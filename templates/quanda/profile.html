@@ -1,0 +1,34 @@
+{% extends "layout/no_columns.html" %}
+
+{% load quanda %}
+
+{% block body_content %}
+
+<p><a href="{% url quanda_index %}">back</a></p>
+
+<p>Username: {{ profile.user.username }}</p>
+
+<p>Reputation: {{ profile.user.username|rep }}</p>
+
+{% if user.is_staff %}
+    <form action="" method="post">
+        <table>
+            {{ rep_form.as_table }}
+            <tr><td></td><td><input type='submit' value='Change Rep' /></td></tr>
+        </table>
+        
+    </form>
+{% endif %}
+
+
+<h1>Your questions</h1>
+
+<ul>
+    {% for question in questions %}
+    <li><a href="{% url quanda_question_read question.id %}">{{ question.title }}</a></li>
+    {% endfor %}
+</ul>
+
+<h1>Your answers</h1>
+
+{% endblock %}

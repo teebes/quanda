@@ -1,0 +1,25 @@
+{% extends "layout/right_column.html" %}
+
+{% load quanda %}
+
+{% block css %}
+<style type='text/css'>
+</style>
+{% endblock %}
+    
+{% block body_content %}
+
+<h1>New list</h1>
+<form action="" method="post">
+    {{ form.as_p }}
+    <input type='submit' value='Create List' />
+</form>
+
+<h1>Existing lists</h1>
+<ul>
+{% for list in lists %}
+    <li><a href="{% url quanda_list_details list.id %}">{{ list.title }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

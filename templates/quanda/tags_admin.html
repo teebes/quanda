@@ -1,0 +1,26 @@
+{% extends "layout/no_columns.html" %}
+
+{% block body_content %}
+
+<p><a href="{% url quanda_index %}">back</a></p>
+
+<h1>Tag administration</h1>
+
+<p>New tag:</p>
+<form action="" method="post">
+    {{ new_tag_form.as_p }}
+    <input type='submit' value='Add Tag' />
+</form>
+
+<p>Existing tags:</p>
+
+<ul>
+{% for tag in tags %}
+    <li>
+        {{ tag.title }}
+        <a href="{% url quanda_delete_tag tag.id %}" onclick="javascript:return confirm('Delete tag?')">delete</a>
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

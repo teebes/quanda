@@ -1,0 +1,19 @@
+{% extends "layout/base.html" %}
+
+{% block layout %}
+
+<div id="body_content" style='width: 619px; border-right: 1px solid #cccccc;'>
+{% block body_content %}
+Body contents
+{% endblock %}
+</div>
+
+<div id="right_column">
+{% block right_column %}
+Right Column
+{% endblock %}
+</div>
+
+<div style='clear: both;'></div>
+
+{% endblock %}

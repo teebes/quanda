@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>{% block title %}Quanda{% endblock %}</title>
+    <style type='text/css'>
+        #body_content {
+            float: left;
+            min-height: 400px;
+            padding: 15px;
+        }
+        #right_column {
+            float: left;
+            overflow: hidden;
+            width: 300px;
+        }
+        .column_block {
+            border-bottom: 1px solid #CCCCCC;
+            display: block;
+            padding: 15px;            
+        }
+    </style>
+    {% block css %}{% endblock %}
+    {% block js %}{% endblock %}
+</head>
+
+<body>
+
+{% block layout %}
+
+{% endblock %}
+
+</body>
+</html>

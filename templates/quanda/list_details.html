@@ -1,0 +1,31 @@
+{% extends "layout/right_column.html" %}
+
+{% load quanda %}
+
+{% block css %}
+<style type='text/css'>
+</style>
+{% endblock %}
+    
+{% block body_content %}
+
+<p><a href="{% url quanda_lists %}">back</a></p>
+
+<h1>Edit list:</h1>
+<form action="" method="post">
+    {{ edit_form.as_p }}
+    <input type='submit' name='edit_list' value='Save' />
+</form>
+<h1>Order list:</h1>
+
+<p><a href="">add a question to the list</a></p>
+
+{% for question in list.questions.all %}
+    {{ question.title }}
+{% endfor %}
+
+{{ order_form.as_p }}
+
+{{ questions }}
+
+{% endblock %}
