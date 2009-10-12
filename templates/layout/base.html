@@ -41,9 +41,6 @@
     {% if user.is_authenticated %}
         <a href="{% url quanda_public_profile user.username %}">{{ user.username }}</a> &bull; {{ user.username|rep }}
         | <a href="/accounts/logout/">logout</a>
-        {% if user.is_staff %}
-            | <a href="{% url quanda_tags_admin %}">manage tags</a>
-        {% endif %}
     {% else %}
         <a href="/accounts/login/">login</a>
         | <a href="/accounts/register/">sign up</a>
