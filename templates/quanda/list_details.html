@@ -1,4 +1,4 @@
-{% extends "layout/right_column.html" %}
+{% extends "layout/no_columns.html" %}
 
 {% load quanda %}
 
@@ -12,20 +12,45 @@
 <p><a href="{% url quanda_lists %}">back</a></p>
 
 <h1>Edit list:</h1>
-<form action="" method="post">
-    {{ edit_form.as_p }}
-    <input type='submit' name='edit_list' value='Save' />
-</form>
+
+<table class='quanda_std_table'>
+    <form action="" method="post">
+        {{ edit_form.as_table }}
+        <tr>
+            <td></td>
+            <td><input type='submit' name='edit_list' value='Save' /></td>
+        </tr>
+    </form>
+</table>
+
+<h1>Add a question:</h1>
+
+<table class='quanda_std_table'>
+    <form action="" method="post">
+        {{ add_question_form.as_table }}
+        <tr>
+            <td></td>
+            <td><input type='submit' name='add_question' value='Add' /></td>
+        </tr>
+    </form>
+</table>
+
+<p>To remove a question from the list, set its order to 0.</p>
+
 <h1>Order list:</h1>
 
-<p><a href="">add a question to the list</a></p>
+{% if invalid_count %}
+    <p><span style="color: red;">Invalid ordering: each question must have a unique order number.</span></p>
+{% endif %}
 
-{% for question in list.questions.all %}
-    {{ question.title }}
-{% endfor %}
-
-{{ order_form.as_p }}
-
-{{ questions }}
+<form action="" method="post">
+    {% for list_item in questions_list %}
+        <p>
+            <input type='text' value="{{ list_item.order }}" name="{{ list_item.question.id }}" size='1' />
+            <a href="{% url quanda_question_read list_item.question.id %}">{{ list_item.question.title }}</a>
+        </p>
+    {% endfor %}
+    <input type='submit' name='reorder' value='Reorder' />
+</form>
 
 {% endblock %}

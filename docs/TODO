@@ -1,5 +1,19 @@
-* Grant reputation option (for administration)
-* Comments
-* Badges
-* Featured questions panel (manageable)
-* 
+Roadmap
+=======
+Here are the next major features that need to go into quanda,
+in rough priority order. Sizes (from 1 to 5) in parenthesis.
+
+* (2) Questions & Answers rss feed
+* (2) Unanswered Questions column
+* (5) Better Search
+* (3) Ability to associate costs to voting up and down on questions / answers
+* (3) Gravatar integration
+* (5) Comments
+* (4) Email notifications for answers
+* (5) Twitter asking and answering capability
+* (5) Badges
+* (3) Sphinx documentation
+
+List of open issues
+===================
+http://www.rememberthemilk.com/home/teebes/10417818/#section.tasks

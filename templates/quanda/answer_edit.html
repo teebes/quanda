@@ -1,0 +1,24 @@
+{% extends "layout/no_columns.html" %}
+
+{% load quanda %}
+
+{% block css %}
+{% endblock %}
+
+{% block body_content %}
+
+<p><a href="{% url quanda_question_read answer.question.id %}">back</a></p>
+
+<h1>Edit your answer</h1>
+
+<form action="" method="post">
+    <table class='quanda_std_table'>
+        {{ answer_form.as_table }}
+        <tr>
+            <td></td>
+            <td><input type='submit' value='Save Changes' /></td>
+        </tr>
+    </table>
+</form>
+
+{% endblock %}

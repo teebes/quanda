@@ -1,4 +1,4 @@
-{% extends "layout/right_column.html" %}
+{% extends "layout/no_columns.html" %}
 
 {% load quanda %}
 
@@ -8,6 +8,11 @@
 {% endblock %}
     
 {% block body_content %}
+
+<p><a href="{% url quanda_index %}">back</a></p>
+
+<p><i>Creating a 'featured' list will display those questions on the home
+(quanda_index) page</i></p>
 
 <h1>New list</h1>
 <form action="" method="post">

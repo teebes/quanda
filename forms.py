@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.contrib.auth.models import User
 
-from quanda.models import Question, QuestionList, QuestionListOrder, QuestionTag, Answer
+from quanda.models import Question, QuestionList, QuestionListOrder, QuestionTag, Answer, Profile
 
 class QuestionForm(forms.ModelForm):
     
@@ -24,23 +24,16 @@ class QuestionForm(forms.ModelForm):
         if self.author.is_authenticated():
             question.author = self.author
         else:
-            try:
-                question.author = User.objects.get(username='anonymous_user')
-            except User.DoesNotExist: # this should only ever happen once
-                # TODO: this is poorly placed. Right now it assumes that
-                # anyone using quanda will create a question as anonymous
-                # to create this user. Someone could answer a question before
-                # any anon ask a question
-                anonymous_user = User(username='anonymous_user')
-                anonymous_user.save()
-                question.author = anonymous_user
+            question.author = User.objects.get(username='anonymous_user')
         
         question.last_modified = datetime.datetime.now()
         question.save()
 
-        for tag in self.cleaned_data['tags'].all():
-            question.tags.add(tag)
-        question.save()
+        if self.cleaned_data['tags']:
+            question.tags = []
+            for tag in self.cleaned_data['tags'].all():
+                question.tags.add(tag)
+            question.save()
 
         return question
     
@@ -61,6 +54,9 @@ class AnswerForm(forms.ModelForm):
         fields = ['answer_text']
         
     def __init__(self, author, question, *args, **kwargs):
+        if kwargs.has_key('edit'):
+            self.edit = kwargs['edit']            
+            del kwargs['edit']
         super(AnswerForm, self).__init__(*args, **kwargs)
         self.author = author
         self.question = question
@@ -80,7 +76,7 @@ class AnswerForm(forms.ModelForm):
         return answer
     
     def clean(self):
-        if self.author.is_authenticated():
+        if not hasattr(self,'edit') and self.author.is_authenticated():
             if Answer.objects.filter(question=self.question, author=self.author):
                 raise forms.ValidationError("You've already answered this question.")
         return self.cleaned_data
@@ -88,6 +84,22 @@ class AnswerForm(forms.ModelForm):
 class RepForm(forms.Form):
     base_rep = forms.IntegerField()
     #username = forms.CharField(max_length=140, widget=forms.HiddenInput, required=True)
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        exclude = ['user', 'reputation']
+    
+    def __init__(self, user, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        self.user = user
+    
+    def save(self, *args, **kwargs):
+        kwargs['commit'] = False
+        profile = super(ProfileForm, self).save(*args, **kwargs)
+        profile.user = self.user
+        profile.save()
+        return profile
 
 class QuestionListForm(forms.ModelForm):
     class Meta:
@@ -97,7 +109,23 @@ class QuestionListForm(forms.ModelForm):
 class QuestionListOrderForm(forms.ModelForm):
     class Meta:
         model = QuestionListOrder
-
+        
+class QuestionListAddForm(forms.Form):
+    question = forms.IntegerField(required=True, label='Question id')
     
+    def __init__(self, list, *args, **kwargs):
+        super(QuestionListAddForm, self).__init__(*args, **kwargs)
+        self.list = list
+        
+    def clean_question(self):
+        id = self.cleaned_data['question']
+        try:
+            question = Question.objects.get(pk=id)
+        except Question.DoesNotExist:
+            raise forms.ValidationError("This question does not exist")
+        
+        if QuestionListOrder.objects.filter(question_list=self.list, question=question):
+            raise forms.ValidationError("This question is already on the list")
 
-    
+        return id
+

@@ -21,6 +21,9 @@ class Profile(models.Model):
     # Since rep is calculated dynamically, this represents reputation awarded
     # outside the regular rep process (say by an admin)
     reputation = models.IntegerField(default=0)
+    website = models.CharField(max_length=140, blank=True)
+    bio = models.TextField(blank=True)
+    location = models.CharField(max_length=140, blank=True)
     
     def __unicode__(self):
         return u"quanda user %s" % self.user
@@ -46,9 +49,20 @@ class Question(models.Model):
     
     def get_absolute_url(self):
         return reverse("quanda_question_read", args=[self.id])
-    
+        
+    def get_ref(self):
+        """returns a ready-for-html string with the question score, title and
+        link"""
+        
+        return u"%s &bull; <a href='%s'>%s</a> - by <a href='%s'>%s</a>" % (
+            self.get_score(),
+            reverse('quanda_question_read', args=[self.id]),
+            self.title,
+            reverse('quanda_public_profile', args=[self.author.username]),
+            self.author.username)
+        
     def __unicode__(self):
-        return u"question %s: %s" % (self.id, self.title)
+        return u"%s, %s" % (self.id, self.title)
 
 class QuestionVote(models.Model):
     user = models.ForeignKey(User)

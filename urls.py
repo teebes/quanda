@@ -5,7 +5,6 @@ urlpatterns = patterns('quanda.views',
     
     url(r'^search/$', 'search', name='quanda_search'),
     
-    #url(r'^mystuff/$', 'profile', name='quanda_profile'),
     url(r'^profile/(?P<username>\w+)/$', 'profile', name='quanda_public_profile'),
     
     url(r'^ask/$', 'question_create_edit', name='quanda_question_create'),
@@ -16,12 +15,15 @@ urlpatterns = patterns('quanda.views',
     url(r'^questions/lists/$', 'lists', name='quanda_lists'),
     url(r'^questions/lists/(?P<list_id>\d+)/$', 'list_details', name='quanda_list_details'),
 
+    url(r'^answers/(?P<answer_id>\d+)/edit/$', 'answer_edit', name='quanda_answer_edit'),
     url(r'^answers/(?P<answer_id>\d+)/pick/$', 'pick_answer', name='quanda_pick_answer'),
     url(r'^answers/(?P<answer_id>\d+)/voteup/$', 'answer_adjust_vote', kwargs={'delta': 1}, name='quanda_answer_vote_up'),
     url(r'^answers/(?P<answer_id>\d+)/votedown/$', 'answer_adjust_vote', kwargs={'delta': -1}, name='quanda_answer_vote_down'),
     
     url(r'^tags/admin/$', 'tags_admin', name='quanda_tags_admin'),
     url(r'^tags/admin/(?P<tag_id>\d+)/delete/$', 'delete_tag', name='quanda_delete_tag'),
-
+    url(r'^tags/(?P<tag_id>\w+)/$', 'view_tag', name='quanda_view_tag'),
+    
+    (r'^install/$', 'install'),
     
 )

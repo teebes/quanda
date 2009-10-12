@@ -1,0 +1,11 @@
+0.1
+===
+
+First release of quanda, with the following features:
+* ask & answer questions
+* pick answers
+* vote questions and answers up or own
+* question lists
+* question tags
+* horrible tag-based search
+* public profiles

@@ -1,3 +1,5 @@
+{% load quanda %}
+
 <html>
 <head>
     <title>{% block title %}Quanda{% endblock %}</title>
@@ -17,12 +19,36 @@
             display: block;
             padding: 15px;            
         }
+        .quanda_std_table th {
+            text-align: right;
+            vertical-align: top;
+        }
+        .quanda_std_table ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
     </style>
     {% block css %}{% endblock %}
     {% block js %}{% endblock %}
 </head>
 
 <body>
+
+<div id="quanda_top_bar">
+    <a href="{% url quanda_index %}">home</a>
+    |
+    {% if user.is_authenticated %}
+        <a href="{% url quanda_public_profile user.username %}">{{ user.username }}</a> &bull; {{ user.username|rep }}
+        | <a href="/accounts/logout/">logout</a>
+        {% if user.is_staff %}
+            | <a href="{% url quanda_tags_admin %}">manage tags</a>
+        {% endif %}
+    {% else %}
+        <a href="/accounts/login/">login</a>
+        | <a href="/accounts/register/">sign up</a>
+    {% endif %}
+</div>
 
 {% block layout %}
 

@@ -6,22 +6,51 @@
 
 <p><a href="{% url quanda_index %}">back</a></p>
 
-<p>Username: {{ profile.user.username }}</p>
-
-<p>Reputation: {{ profile.user.username|rep }}</p>
+<table class='quanda_std_table'>
+    <tr>
+        <th>Username:</th>
+        <td>{{ profile.user.username }}</td>
+    </tr>
+    <tr>
+        <th>Reputation:</th>
+        <td>{{ profile.user.username|rep }}</td>
+    </tr>
+{% ifequal user.username profile.user.username %}
+    <form action="" method="post">
+        {{ profile_form.as_table }}
+        <tr>
+            <td></td>
+            <td><input type='submit' name='save_profile' value='Save Profile' /></td>
+        </tr>
+    </form>
+{% else %}
+    <tr>
+        <th>Website:</th>
+        <td>{% if profile.website %}<a href="{{ profile.website }}">{{ profile.website }}</a>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Location:</th>
+        <td>{{ profile.location }}</td>
+    </tr>
+    <tr>
+        <th>Bio:</th>
+        <td>{{ profile.bio|safe }}</td>
+    </tr>
+{% endifequal %}
+</table>
 
 {% if user.is_staff %}
     <form action="" method="post">
         <table>
             {{ rep_form.as_table }}
-            <tr><td></td><td><input type='submit' value='Change Rep' /></td></tr>
+            <tr><td></td><td><input type='submit' name='change_rep' value='Change Rep' /></td></tr>
         </table>
         
     </form>
 {% endif %}
 
 
-<h1>Your questions</h1>
+<h1>Questions Asked:</h1>
 
 <ul>
     {% for question in questions %}
@@ -29,6 +58,27 @@
     {% endfor %}
 </ul>
 
-<h1>Your answers</h1>
+<h1>Answer Given to Questions:</h1>
+
+<ul>
+    {% for answer in answers %}
+        <li><a href="{% url quanda_question_read answer.question.id %}#answer_{{ answer.id }}">{{ answer.question.title }}</a></li>    
+    {% endfor %}
+</ul>
+
+<script type="text/javascript" src="/static/js/tiny_mce/tiny_mce.js"></script>
+
+<script type="text/javascript">
+    tinyMCE.init({
+    theme : "advanced",
+    mode : "textareas",
+    plugins : "preview",
+    theme_advanced_buttons3_add : "preview",
+    plugin_preview_width : "600",
+    plugin_preview_height : "300",
+    width : "500",
+    height: "300",
+    });
+</script>
 
 {% endblock %}

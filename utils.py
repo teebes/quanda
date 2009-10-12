@@ -2,16 +2,19 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Sum
 
-from quanda.models import Question, QuestionVote, Profile
+from quanda.models import Question, QuestionVote, Profile, Answer, AnswerVote
 
-vote_question_down_price = getattr(settings, 'VOTE_QUESTION_DOWN_PRICE', 2)
-vote_question_up_price = getattr(settings, 'VOTE_QUESTION_UP_PRICE', 0)
-
+QUESTION_VOTED_UP = getattr(settings, 'QUESTION_VOTED_UP', 10)
+QUESTION_VOTED_DOWN = getattr(settings, 'QUESTION_VOTED_DOWN', 5)
+ANSWER_VOTED_UP = getattr(settings, 'ANSWER_VOTED_UP', 10)
+ANSWER_VOTED_DOWN = getattr(settings, 'ANSWER_VOTED_DOWN', 5)
 
 def get_user_rep(username):
-    """Returns a user's rep, calculated by:
-    - the number of up votes minus the number of down votes on each question
     """
+    Returns a user's rep, calculated by based on questions and answers being
+    voted up or down
+    """
+    
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -22,8 +25,17 @@ def get_user_rep(username):
 
     for question in Question.objects.filter(author=profile.user):
          for question_vote in QuestionVote.objects.filter(question=question):
-            #TODO: this can probably be done via aggregation
-            score += question_vote.score
-         
+            if question_vote.score == 1:
+                score += QUESTION_VOTED_UP
+            elif question_vote.score == -1:
+                score += QUESTION_VOTED_DOWN
+
+    for answer in Answer.objects.filter(author=profile.user):
+        for answer_vote in AnswerVote.objects.filter(answer=answer):
+            if answer_vote.score == 1:
+                score += ANSWER_VOTED_UP
+            elif answer_vote.score == -1:
+                score += ANSWER_VOTED_DOWN
+
     return score
     

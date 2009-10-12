@@ -1,0 +1,15 @@
+{% extends "layout/no_columns.html" %}
+
+{% block body_content %}
+
+<h1>Search results:</h1>
+
+
+{% for question in results %}
+    <p>{{ question.get_ref|safe }}</p>
+{% empty %}
+    <p><i>No results.</i></p>
+{% endfor %}
+
+
+{% endblock %}
