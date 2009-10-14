@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 
 from quanda.models import Question, QuestionList, QuestionListOrder, QuestionTag, Answer, Profile
+from quanda.utils import strip_js
 
 class QuestionForm(forms.ModelForm):
     
@@ -26,6 +27,7 @@ class QuestionForm(forms.ModelForm):
         else:
             question.author = User.objects.get(username='anonymous_user')
         
+        question.question_text = strip_js(question.question_text)
         question.last_modified = datetime.datetime.now()
         question.save()
 
@@ -71,6 +73,7 @@ class AnswerForm(forms.ModelForm):
             answer.author = User.objects.get(username='anonymous_user')
         
         answer.question = self.question
+        answer.answer_text = strip_js(answer.answer_text)
         answer.last_modified = datetime.datetime.now()
         answer.save()
         return answer
@@ -97,6 +100,7 @@ class ProfileForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         kwargs['commit'] = False
         profile = super(ProfileForm, self).save(*args, **kwargs)
+        profile.bio = strip_js(profile.bio)
         profile.user = self.user
         profile.save()
         return profile

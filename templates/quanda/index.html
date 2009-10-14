@@ -84,13 +84,17 @@
     <div id='quanda_panel_middle_column'>
         <h2>Top Questions</h2>
         {% for top_question in top_questions %}
+            {{ top_question }}
+        {% comment %}
             <p>
                 {{ top_question.score }} -
                 <a href="{% url quanda_question_read top_question.question.id %}">
                     {{ top_question.question.title }}
                 </a>
             </p>
+        {% endcomment %}
         {% endfor %}
+
     </div>
     <div>
         <h2>Answers for you:</h2>

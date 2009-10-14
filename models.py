@@ -54,12 +54,20 @@ class Question(models.Model):
         """returns a ready-for-html string with the question score, title and
         link"""
         
-        return u"%s &bull; <a href='%s'>%s</a> - by <a href='%s'>%s</a>" % (
-            self.get_score(),
-            reverse('quanda_question_read', args=[self.id]),
-            self.title,
-            reverse('quanda_public_profile', args=[self.author.username]),
-            self.author.username)
+        if self.author.username == 'anonymous_user':
+            by = "<i>anonymous</i>"
+        else:
+            by = "<a href='%s'>%s</a>" % (
+                reverse('quanda_public_profile', args=[self.author.username]),
+                self.author.username,
+            )
+        
+        return u"%s &bull; <a href='%s'>%s</a> - by %s" % (
+                self.get_score(),
+                reverse('quanda_question_read', args=[self.id]),
+                self.title,
+                by,
+            )
         
     def __unicode__(self):
         return u"%s, %s" % (self.id, self.title)

@@ -35,15 +35,27 @@ Once you have quanda up and running, go to /install to run the install process
 that your login as at /accounts/login, your registration at /accounts/register/
 and your logout as /accounts/logout.
 
+* Quanda uses TinyMCE_ in the ask question and answer question textareas. You
+should specify the location of your tiny_mce.js file  in the
+TINY_MCE_JS_LOCATION config variable. If quanda doesn't find it, it will use
+the js file from teebes.com instead
+
+_ http://tinymce.moxiecode.com/
+
 Configuration
 =============
 
+# the rewards given per question or answer voted on
 QUESTION_VOTED_UP (default 10)
 QUESTION_VOTED_DOWN (default 5)
 ANSWER_VOTED_UP (default 10)
 ANSWER_VOTED_DOWN (default 5)
 
+# the requirements to vote on questions & answers
 VOTE_QUESTION_UP_REP (default 0)
 VOTE_QUESTION_DOWN_REP (default 0)
 VOTE_ANSWER_UP_REP (default 0)
 VOTE_ANSWER_DOWN_REP (default 0)
+
+# the location of the tiny_mce.js file
+TINY_MCE_JS_LOCATION (default 'http://teebes.com/static/js/tiny_mce/tiny_mce.js')

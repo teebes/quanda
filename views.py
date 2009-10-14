@@ -11,30 +11,19 @@ from quanda.forms import QuestionForm, QuestionTagForm, QuestionListForm, Questi
 from quanda.models import Question, QuestionVote, QuestionTag, QuestionList, QuestionListOrder, Answer, AnswerVote, Profile
 from quanda.utils import get_user_rep
 
+TINY_MCE_JS_LOCATION = getattr(settings, 'TINY_MCE_JS_LOCATION', 'http://teebes.com/static/js/tiny_mce/tiny_mce.js')
+
 # === Index, Tags, Search & Profile ===
-def index(request):
-    questions = Question.objects.all()
-    
-    # figure out which questions have the highest scores
-    top_questions = []
-    for question in questions:
-        top_questions.append({
-            'question': question,
-            'score': question.get_score()
-        })
-    top_questions.sort(lambda x, y: x['score'] - y['score'], reverse=True)
-    
+def index(request):    
     if request.user.is_authenticated():
-        your_answers = Answer.objects.filter(question__author=request.user).order_by("-posted")
+        your_answers = Answer.objects.filter(question__author=request.user).order_by("-posted")[:5]
     else:
         your_answers = None
 
     return render_to_response('quanda/index.html', {
-        'questions': Question.objects.all(),
         'featured': QuestionListOrder.objects.filter(question_list__title='featured').order_by('order'),
-        
-        'top_questions': top_questions[:5],
-        'recent_questions': questions.order_by("-posted")[:5],
+        'top_questions': Question.objects.annotate(score=Sum('questionvotes__score')).order_by('-score')[:5],
+        'recent_questions': Question.objects.order_by("-posted")[:5],
         'your_answers': your_answers,
         }, context_instance=RequestContext(request))
 
@@ -46,14 +35,17 @@ def search(request):
     query = ''
     if request.method == 'GET':
         query = request.GET['query']
-        
-    tags = QuestionTag.objects.values_list('title', flat=True)
-    present_tags = []
-    for word in query.split(' '):
-        if word in tags:
-            present_tags.append(word)
-
-    results = Question.objects.filter(tags__title__in=present_tags).distinct().order_by('-posted')
+    
+    if query == '': # if nothing is passed, return the 50 most recent questions
+        results = Question.objects.all().order_by('-posted')[:50]
+    else:
+        tags = QuestionTag.objects.values_list('title', flat=True)
+        present_tags = []
+        for word in query.split(' '):
+            if word in tags:
+                present_tags.append(word)
+    
+        results = Question.objects.filter(tags__title__in=present_tags).distinct().order_by('-posted')
 
     return render_to_response("quanda/search_results.html", {
         'results': results,
@@ -92,6 +84,7 @@ def profile(request, username):
         'questions': Question.objects.filter(author__username=username).order_by('-posted'),
         'answers': Answer.objects.filter(author__username=username).order_by('-posted'),
         'profile': profile,
+        'tinymce': TINY_MCE_JS_LOCATION,
         }, context_instance=RequestContext(request))
 
 
@@ -123,6 +116,7 @@ def question_create_edit(request, question_id=None):
     
     return render_to_response('quanda/question_create_edit.html', {
         'form': form,
+        'tinymce': TINY_MCE_JS_LOCATION,
         }, context_instance=RequestContext(request))
 
     
@@ -174,6 +168,7 @@ def question_read(request, question_id=None, msg=None, context={}):
     context['answer_form'] = answer_form
     context['answers'] = answers
     context['user_answered_question'] = user_answered_question
+    context['tinymce'] = TINY_MCE_JS_LOCATION
 
     return render_to_response('quanda/question_read.html',
                                context,

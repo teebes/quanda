@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Sum
@@ -38,4 +40,10 @@ def get_user_rep(username):
                 score += ANSWER_VOTED_DOWN
 
     return score
+    
+def strip_js(html_string):
+    """this function should remove any javascript from an html string. For now,
+    it simply replaces any occurence of <script with an empty string"""
+    return re.sub('<script', '', html_string)
+    
     
