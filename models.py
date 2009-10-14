@@ -75,6 +75,9 @@ class QuestionTag(models.Model):
     created = models.DateTimeField(default=datetime.datetime.now())
     
     def __unicode__(self): return u"%s" % self.title
+    
+    class Meta:
+        ordering = ('title',)
 
 class QuestionList(models.Model):
     title = models.CharField(max_length=140, unique=True)

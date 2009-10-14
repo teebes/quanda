@@ -63,10 +63,15 @@
     </h2>
     <p>
         {{ question.get_posted_date }} - by
-        <a href="{% url quanda_public_profile question.author.username %}">
-            {{ question.author.username }}
-        </a>
-        (rep: {{ question.author.username|rep }}) -
+        {% ifequal question.author.username 'anonymous_user' %}
+            <i>anonymous</i>
+        {% else %}
+            <a href="{% url quanda_public_profile question.author.username %}">
+                {{ question.author.username }}
+            </a>
+            &bull; {{ question.author.username|rep }}
+        {% endifequal %}
+        -
         {% ifequal user_question_previous_vote 1 %} voted up
         {% else %} <a href="{% url quanda_question_vote_up question.id %}">vote up</a>
         {% endifequal %}
@@ -103,9 +108,9 @@
             <a href="{% url quanda_public_profile answer.author.username %}">
                 {{ answer.author.username }}
             </a>
-            (rep: {{ answer.author.username|rep }}) -
+            &bull; {{ answer.author.username|rep }}
         {% endifequal %}
-        
+        -
         {% ifequal answer.user_prev_vote 1 %} voted up
         {% else %} <a href="{% url quanda_answer_vote_up answer.id %}">vote up</a>
         {% endifequal %}

@@ -96,12 +96,17 @@
         <h2>Answers for you:</h2>
         {% if user.is_authenticated %}
             {% for answer in your_answers %}
-                <p><a href="{% url quanda_question_read answer.question.id %}#answer_{{ answer.id }}">{{ answer.answer_text }}</a></p>
+                <div style='border-bottom: 1px dotted #cccccc;'>
+                    <p>Latest answer to
+                        <a href="{% url quanda_question_read answer.question.id %}#answer_{{ answer.id }}">{{ answer.question.title }}</a>:
+                    </p>
+                    {{ answer.answer_text|safe }}
+                </div>
             {% empty %}
                 <i>There are no answers to your questions at this time</i>
             {% endfor %}
         {% else %}
-            <i>Please log in to see the answers to your questions.</i>
+            <i><a href="/accounts/login">Log in</a> to see the answers to your questions.</i>
         {% endif %}
     </div>
 </div>

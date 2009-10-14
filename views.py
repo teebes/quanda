@@ -112,21 +112,14 @@ def question_create_edit(request, question_id=None):
         
     if request.method == 'POST':
         form = QuestionForm(request.user, request.POST, instance=question)
-        #form = QuestionForm(request.POST)
         if form.is_valid():
-            #return HttpResponse('ok')
             question = form.save()
             return HttpResponseRedirect(reverse('quanda_question_read', args=[question.id]))
-    else:
-        form = QuestionForm(request.user, instance=question, initial={'tags': [1, 2]})
-        """
-        initial = {}
+    else:        
+        tags = []
         if question:
-            initial['title'] = question.title
-            initial['question'] = question.question_text
-            initial['tags'] = question.tags.all()
-        form = QuestionForm(initial=initial)
-        """
+            tags = question.tags.values_list('id', flat=True)
+        form = QuestionForm(request.user, instance=question, initial={'tags': tags})
     
     return render_to_response('quanda/question_create_edit.html', {
         'form': form,
