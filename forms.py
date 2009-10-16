@@ -27,6 +27,7 @@ class QuestionForm(forms.ModelForm):
         else:
             question.author = User.objects.get(username='anonymous_user')
         
+        question.title = strip_js(question.title)
         question.question_text = strip_js(question.question_text)
         question.last_modified = datetime.datetime.now()
         question.save()

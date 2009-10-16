@@ -19,9 +19,14 @@ def index(request):
         your_answers = Answer.objects.filter(question__author=request.user).order_by("-posted")[:5]
     else:
         your_answers = None
+    
+    try:    
+        featured = QuestionList.objects.get(title='featured').questions.all().order_by('questionlistorder__order')
+    except QuestionList.DoesNotExist:
+        featured = None
 
     return render_to_response('quanda/index.html', {
-        'featured': QuestionListOrder.objects.filter(question_list__title='featured').order_by('order'),
+        'featured': featured,
         'top_questions': Question.objects.annotate(score=Sum('questionvotes__score')).order_by('-score')[:5],
         'recent_questions': Question.objects.order_by("-posted")[:5],
         'your_answers': your_answers,

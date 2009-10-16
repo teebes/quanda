@@ -12,8 +12,9 @@ urlpatterns = patterns('quanda.views',
     url(r'^(?P<question_id>\d+)/edit/$', 'question_create_edit', name='quanda_question_edit'),
     url(r'^(?P<question_id>\d+)/voteup/$', 'question_adjust_vote', kwargs={'delta': 1}, name='quanda_question_vote_up'),
     url(r'^(?P<question_id>\d+)/votedown/$', 'question_adjust_vote', kwargs={'delta': -1}, name='quanda_question_vote_down'),
-    url(r'^questions/lists/$', 'lists', name='quanda_lists'),
-    url(r'^questions/lists/(?P<list_id>\d+)/$', 'list_details', name='quanda_list_details'),
+
+    url(r'^lists/$', 'lists', name='quanda_lists'),
+    url(r'^lists/(?P<list_id>\d+)/$', 'list_details', name='quanda_list_details'),
 
     url(r'^answers/(?P<answer_id>\d+)/edit/$', 'answer_edit', name='quanda_answer_edit'),
     url(r'^answers/(?P<answer_id>\d+)/pick/$', 'pick_answer', name='quanda_pick_answer'),

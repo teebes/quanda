@@ -5,6 +5,7 @@ in rough priority order. Sizes (from 1 to 5) in parenthesis.
 
 * (2) Questions & Answers rss feeds
 * (2) Unanswered Questions column
+* (3) Implement view count in questions
 * (5) Better Search
 * (3) Ability to associate costs to voting up and down on questions / answers
 * (3) Gravatar integration
