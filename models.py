@@ -5,6 +5,7 @@ import random
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.template.defaultfilters import slugify
 
 def get_posted_date(obj):
     delta = datetime.datetime.now() - obj.posted
@@ -48,7 +49,9 @@ class Question(models.Model):
         return score
     
     def get_absolute_url(self):
-        return reverse("quanda_question_read", args=[self.id])
+        return "%s%s" % (
+            reverse("quanda_question_read", args=[self.id]),
+            slugify(self.title))
         
     def get_ref(self):
         """returns a ready-for-html string with the question score, title and
@@ -56,7 +59,8 @@ class Question(models.Model):
         
         return u"%s &bull; <a href='%s'>%s</a>" % (
                 self.get_score(),
-                reverse('quanda_question_read', args=[self.id]),
+                #reverse('quanda_question_read', args=[self.id]),
+                self.get_absolute_url(),
                 self.title,
             )
         
