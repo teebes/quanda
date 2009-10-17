@@ -47,27 +47,21 @@
 
 {% block body_content %}
 
-{% if user.is_staff %}
 <div style='margin-bottom: 10px;'>
+    <a id="scs_ask" href="{% url quanda_question_create %}">ask a question</a> |
+    {% if user.is_staff %}
     <a href="{% url quanda_tags_admin %}">manage tags</a>
-    | <a href="{% url quanda_lists %}">manage lists</a>
-</div>
-{% endif %}
-
-<div id='quanda_main_box'>
-    <div id="quanda_quicksearch">
-        <p>Search questions and answers:</p>
-        <form action="{% url quanda_search %}" method="get">
-            <input type='text' name='query' />
-            <input type='submit' value='Search' />
-        </form>
-    </div>
-    <div id="quanda_ask">
-        <p><a href="{% url quanda_question_create %}">Ask a question</a></p>
-        
-        <p><i>Ask quanda a question. You don't even need to register!</i></p>
-    </div>    
-    <div style='clear: both;'></div>
+    | <a href="{% url quanda_lists %}">manage lists</a> |
+    {% endif %}
+    <form action="{% url quanda_search %}" method="get" style="display: inline;">
+        <input type='text' name='query' />
+        <input type='submit' value='Search' />
+    </form>
+    |
+    <a href="{% url quanda_feed 'latest' %}">
+        <img id='rss_icon' src='http://scstrategy.com/static/images/base/rss.png' />
+    </a>
+    <a href="{% url quanda_feed 'latest' %}">latest questions feed</a>
 </div>
 
 <div id="quanda_panels">

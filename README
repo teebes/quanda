@@ -16,7 +16,14 @@ INSTALLED_APPS = (
     'quanda',
     ...
 )
- 
+
+* Quanda assumes the following contrib apps are enabled:
+ - admin
+ - auth
+ - session
+ - sitemaps
+ - sites (only needed to get your site's name for rss and seo)
+
 * Include the url file to your urls:
 urlpatterns = pattern('',
    ...

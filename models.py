@@ -42,6 +42,9 @@ class Question(models.Model):
     get_posted_date = get_posted_date
     objects = QuestionManager()
     
+    def get_view_count(self):
+        return QuestionView.objects.filter(question=self).count()
+    
     def get_score(self):
         score = 0
         for question_vote in QuestionVote.objects.filter(question=self):
@@ -64,7 +67,6 @@ class Question(models.Model):
                 self.title,
             )
         
-        
     def __unicode__(self):
         return u"%s, %s" % (self.id, self.title)
 
@@ -72,6 +74,12 @@ class QuestionVote(models.Model):
     user = models.ForeignKey(User)
     question = models.ForeignKey(Question, related_name='questionvotes')
     score = models.IntegerField(default=0)
+    
+class QuestionView(models.Model):
+    question = models.ForeignKey(Question, related_name='questionviews')
+    ip = models.CharField(max_length=40)
+    session = models.CharField(max_length=40)
+    created = models.DateTimeField(default=datetime.datetime.now())
     
 class QuestionTag(models.Model):
     title = models.CharField(max_length=140, unique=True)

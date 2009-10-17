@@ -12,7 +12,7 @@ class QuestionForm(forms.ModelForm):
     
     class Meta:
         model = Question
-        exclude = ['author', 'posted', 'last_modified']
+        exclude = ['author', 'posted', 'last_modified', 'view_count']
         
     def __init__(self, author, *args, **kwargs):
         super(QuestionForm, self).__init__(*args, **kwargs)

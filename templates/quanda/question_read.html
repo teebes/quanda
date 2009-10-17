@@ -3,6 +3,9 @@
 {% load quanda %}
 
 {% block css %}
+
+<link href="{% url quanda_record_view question.id %}" rel="stylesheet" type="text/css" />
+
 <style type='text/css'>
 #quanda_question_box {
     background: #f1f1ff;
@@ -42,6 +45,7 @@
 .quanda_score {
     font-size: 120%;
 }
+
 </style>
 {% endblock %}
 
@@ -53,8 +57,8 @@
         | <a href="{% url quanda_question_edit question.id %}">edit question</a>
     {% endifequal %}
     |
-    <a href="{% url quanda_feed 'latest' %}">
-        <img id='rss_icon' src='/static/images/base/rss.png' />
+    <a href="{% url quanda_index %}feeds/answers/{{ question.id }}/">
+        <img id='rss_icon' src='http://scstrategy.com/static/images/base/rss.png' />
     </a>
     <a href="{% url quanda_index %}feeds/answers/{{ question.id }}/">answers feed</a>
 </p>
@@ -67,6 +71,7 @@
         &bull; {{ question.title }}
     </h2>
     <p>
+        {{ question.get_view_count }} views -
         {{ question.get_posted_date }} - by
         {% ifequal question.author.username 'anonymous_user' %}
             <i>anonymous</i>

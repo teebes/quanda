@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -8,7 +10,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from quanda.forms import QuestionForm, QuestionTagForm, QuestionListForm, QuestionListOrderForm, QuestionListAddForm, AnswerForm, RepForm, ProfileForm
-from quanda.models import Question, QuestionVote, QuestionTag, QuestionList, QuestionListOrder, Answer, AnswerVote, Profile
+from quanda.models import Question, QuestionVote, QuestionTag, QuestionList, QuestionListOrder, QuestionView, Answer, AnswerVote, Profile
 from quanda.utils import get_user_rep
 
 TINY_MCE_JS_LOCATION = getattr(settings, 'TINY_MCE_JS_LOCATION', 'http://teebes.com/static/js/tiny_mce/tiny_mce.js')
@@ -179,6 +181,27 @@ def question_read(request, question_id=None, msg=None, context={}):
                                context,
                                context_instance=RequestContext(request))
 
+def record_view(request, question_id):
+    """
+    Keep track of a question's view count.
+    In order to keep as accurate as possible, session keys are checked
+    This view should preferably be called either via Ajax or as a stylesheet
+    to help avoid search engines polluting the view count
+    """
+
+    question = get_object_or_404(Question, pk=question_id)
+
+    if not QuestionView.objects.filter(
+                    question=question,
+                    session=request.session.session_key):
+        view = QuestionView(question=question,
+                            ip=request.META['REMOTE_ADDR'],
+                            created=datetime.datetime.now(),
+                            session=request.session.session_key)
+        view.save()
+    
+    return HttpResponse(u"%s" % QuestionView.objects.filter(question=question).count())
+
 @login_required
 def pick_answer(request, answer_id=None):
     try:
@@ -218,6 +241,7 @@ def answer_edit(request, answer_id=None):
     return render_to_response("quanda/answer_edit.html", {
         'answer_form': answer_form,
         'answer': answer,
+        'tinymce': TINY_MCE_JS_LOCATION,
     }, context_instance=RequestContext(request))
     
     return HttpResponse('edit')

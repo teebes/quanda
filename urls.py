@@ -18,6 +18,7 @@ urlpatterns = patterns('quanda.views',
     url(r'^(?P<question_id>\d+)/edit/$', 'question_create_edit', name='quanda_question_edit'),
     url(r'^(?P<question_id>\d+)/voteup/$', 'question_adjust_vote', kwargs={'delta': 1}, name='quanda_question_vote_up'),
     url(r'^(?P<question_id>\d+)/votedown/$', 'question_adjust_vote', kwargs={'delta': -1}, name='quanda_question_vote_down'),
+    url(r'^(?P<question_id>\d+)/record_view/$', 'record_view', name='quanda_record_view'),
     url(r'^(?P<question_id>\d+)/', 'question_read', {'msg':'test'}, name='quanda_question_read'),
     
     url(r'^lists/$', 'lists', name='quanda_lists'),

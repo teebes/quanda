@@ -4,11 +4,10 @@ Here are the next major features that need to go into quanda,
 in rough priority order. Sizes (from 1 to 5) in parenthesis.
 
 * (2) Unanswered Questions column
-* (3) Implement view count in questions
-* (5) Better Search
-* (3) Ability to associate costs to voting up and down on questions / answers
 * (3) Gravatar integration
+* (3) Ability to associate costs to voting up and down on questions / answers
 * (5) Comments
+* (5) Better Search
 * (4) Email notifications for answers
 * (4) Related questions on asking ajax lookup
 * (5) SEO
