@@ -1,5 +1,12 @@
 from django.conf.urls.defaults import patterns, url, include
 
+from quanda.feeds import RssQuestions, RssAnswers
+
+feeds = {
+    'latest': RssQuestions,
+    'answers': RssAnswers,
+}
+
 urlpatterns = patterns('quanda.views',
     url(r'^$', 'index', name='quanda_index'),
     
@@ -24,7 +31,11 @@ urlpatterns = patterns('quanda.views',
     url(r'^tags/admin/$', 'tags_admin', name='quanda_tags_admin'),
     url(r'^tags/admin/(?P<tag_id>\d+)/delete/$', 'delete_tag', name='quanda_delete_tag'),
     url(r'^tags/(?P<tag_id>\w+)/$', 'view_tag', name='quanda_view_tag'),
-    
+        
     (r'^install/$', 'install'),
     
+)
+
+urlpatterns += patterns('django.contrib.syndication.views',
+    url(r'^feeds/(?P<url>.*)/$', 'feed', {'feed_dict': feeds}, name='quanda_feed'),
 )

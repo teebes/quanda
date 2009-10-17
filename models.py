@@ -49,7 +49,7 @@ class Question(models.Model):
         return score
     
     def get_absolute_url(self):
-        return "%s%s" % (
+        return "%s%s/" % (
             reverse("quanda_question_read", args=[self.id]),
             slugify(self.title))
         
@@ -93,14 +93,6 @@ class QuestionListOrder(models.Model):
     question_list = models.ForeignKey(QuestionList)
     order = models.IntegerField(blank=False)
 
-class RepRule(models.Model):
-    # The axe hangs over this model, still need to think through rep
-    # permissions / thresholds
-    title = models.CharField(max_length=140, unique=True)
-    threshold = models.IntegerField(default=0)
-    giver_reward = models.IntegerField(default=0)
-    receiver_reward = models.IntegerField(default=0)
-
 class Answer(models.Model):
     question = models.ForeignKey(Question, related_name='answers')    
     answer_text = models.TextField()
@@ -121,6 +113,12 @@ class Answer(models.Model):
         for answer_vote in AnswerVote.objects.filter(answer=self):
             score += answer_vote.score
         return score
+    
+    def get_absolute_url(self):
+        return u"%s#answer_%s" % (
+            self.question.get_absolute_url(),
+            self.id
+        )
 
     def __unicode__(self):
         return u"answer %s: %s" % (self.id, self.answer_text)

@@ -1,0 +1,12 @@
+<p>
+    {{ obj.posted|date:"d M Y" }} - by
+    {% ifequal obj.author.username 'anonymous_user' %}
+        <i>anonymous</i>
+    {% else %}
+        <a href="{% url quanda_public_profile obj.author.username %}">
+            {{ obj.author.username }}
+        </a>
+    {% endifequal %}
+</p>
+
+{{ obj.question_text|safe }}

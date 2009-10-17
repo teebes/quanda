@@ -52,6 +52,11 @@
     {% ifequal question.author user %}
         | <a href="{% url quanda_question_edit question.id %}">edit question</a>
     {% endifequal %}
+    |
+    <a href="{% url quanda_feed 'latest' %}">
+        <img id='rss_icon' src='/static/images/base/rss.png' />
+    </a>
+    <a href="{% url quanda_index %}feeds/answers/{{ question.id }}/">answers feed</a>
 </p>
 
 {% if msg %}<div id="quanda_msg">{{ msg }}</div>{% endif %}
@@ -133,14 +138,13 @@
 </div>
 {% endfor %}
 
-
+{% if not user_answered_question %}
 <form action="" method="post">
     <table class='quanda_std_table'>
         {{ answer_form.as_table }}
         <tr><td></td><td><input type='submit' value='Answer Question' /></td></tr>
     </table>
 </form>
-{% if not user_answered_question %}
 {% endif %}
 
 {% endblock %}
