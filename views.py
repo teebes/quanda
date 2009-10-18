@@ -32,6 +32,7 @@ def index(request):
         'top_questions': Question.objects.annotate(score=Sum('questionvotes__score')).order_by('-score')[:5],
         'recent_questions': Question.objects.order_by("-posted")[:5],
         'your_answers': your_answers,
+        'unanswered_questions': Question.objects.filter(answers__isnull=True).order_by('-posted')[:5],
         }, context_instance=RequestContext(request))
 
 def search(request):

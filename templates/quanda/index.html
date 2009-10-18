@@ -108,5 +108,12 @@
     {% endfor %}
 </div>
 
+<div class='column_block'>
+    <h1>Unanswred Questions</h1>
+    {% for question in unanswered_questions %}
+        <p>{{ question.get_ref|safe }}</p>
+    {% endfor %}
+</div>
+
 {% endblock %}
 
