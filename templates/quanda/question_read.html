@@ -46,6 +46,17 @@
     font-size: 120%;
 }
 
+
+.quanda_comments_box { float: right;}
+.quanda_comment{
+    border-top: 1px dotted #cccccc;
+    width: 400px;
+}
+.quanda_add_comment_link { text-align: right; color: #888888; }
+.quanda_add_comment_link:hover { text-decoration: underline; cursor: pointer; }
+.quanda_add_comment { text-align: right; margin-bottom: 5px; }
+#id_comment_text { width: 250px; }
+
 </style>
 {% endblock %}
 
@@ -66,13 +77,13 @@
 {% if msg %}<div id="quanda_msg">{{ msg }}</div>{% endif %}
 
 <div id="quanda_question_box">
-    <h2>
+    <h1 style='margin-bottom: 0'>
         <span class='quanda_score'>{{ question.get_score }}</span>
         &bull; {{ question.title }}
-    </h2>
+    </h1>
     <p>
         {{ question.get_view_count }} views -
-        {{ question.get_posted_date }} - by
+        {{ question.posted|smart_date }} - by
         {% ifequal question.author.username 'anonymous_user' %}
             <i>anonymous</i>
         {% else %}
@@ -91,10 +102,26 @@
         {% endifequal %}
     </p>
     
-    <div>
-        {{ question.question_text|safe }}
+    <div>{{ question.question_text|safe }}</div>
+        
+    <div class='quanda_comments_box'>
+        <div id='add_question_comment_link' class='quanda_add_comment_link'>add a comment</div>
+        <div id="add_question_comment" class='quanda_add_comment' style="display: none;">
+            <form action="" method="post">
+                {{ question.comment_form }} <input type='submit' name='comment' value='Add Comment'/>
+                
+            </form>
+        </div>
+        {% for comment in question.comments.all %}
+            <p class='quanda_comment'>
+                {{ comment.comment_text }}
+                - <a href="{% url quanda_public_profile comment.user.username %}">{{ comment.user.username }}</a>
+                - {{ comment.posted|smart_date }}
+            </p>
+        {% endfor %}
     </div>
-    
+    <div style='clear: both;'></div>
+
 </div>
 <div id='quanda_question_tags'>
     tags:
@@ -111,7 +138,7 @@
 <div {% if answer.user_chosen %}id="quanda_chosen_answer_box"{% endif %} class='quanda_answer_box'>
     <p>
         <span class='quanda_score'>{{ answer.get_score }}</span> &bull;
-        {{ answer.get_posted_date }} - by
+        {{ answer.posted|smart_date }} - by
         {% ifequal answer.author.username 'anonymous_user' %}
             <i>anonymous</i>
         {% else %}
@@ -140,6 +167,24 @@
         {% endifequal %}
     </p>
     <p> {{ answer.answer_text|safe }}</p>
+    
+    <div class='quanda_comments_box'>
+        <div id='add_answer_{{ answer.id }}_comment_link' class='quanda_add_comment_link'>add a comment</div>
+        <div id="add_answer_{{ answer.id }}_comment" class='quanda_add_comment' style="display: none;">
+            <form action="" method="post">
+                {{ answer.comment_form }} <input type='submit' name='comment' value='Add Comment'/>
+            </form>
+        </div>
+        {% for comment in answer.comments.all %}
+            <p class='quanda_comment'>
+                {{ comment.comment_text }}
+                - <a href="{% url quanda_public_profile comment.user.username %}">{{ comment.user.username }}</a>
+                - {{ comment.posted|smart_date }}
+            </p>
+        {% endfor %}
+    </div>
+    <div style='clear: both;'></div>
+    
 </div>
 {% endfor %}
 
@@ -147,7 +192,7 @@
 <form action="" method="post">
     <table class='quanda_std_table'>
         {{ answer_form.as_table }}
-        <tr><td></td><td><input type='submit' value='Answer Question' /></td></tr>
+        <tr><td></td><td><input type='submit' name='answer_question' value='Answer Question' /></td></tr>
     </table>
 </form>
 {% endif %}
@@ -181,5 +226,27 @@
     height: "300",
     });
 </script>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $("#add_question_comment_link").click(function() {
+            $("#add_question_comment").toggle()
+        })
+        $("#add_question_comment").hide()
+    })
+</script>
+
+{% for answer in answers %}
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $("#add_answer_{{ answer.id }}_comment_link").click(function() {
+            $("#add_answer_{{ answer.id }}_comment").toggle()
+        })
+        $("#add_question_comment").hide()
+    })
+</script>
+{% endfor %}
 
 {% endblock %}

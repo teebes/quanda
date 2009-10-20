@@ -4,7 +4,7 @@ What is it
 Quanda is a community-driven question and answer framework.
 
 It is open source and written as a django reusable application.
- 
+
 Install
 =======
 
@@ -20,6 +20,7 @@ INSTALLED_APPS = (
 * Quanda assumes the following contrib apps are enabled:
  - admin
  - auth
+ - contenttypes
  - session
  - sitemaps
  - sites (only needed to get your site's name for rss and seo)
@@ -58,11 +59,12 @@ QUESTION_VOTED_DOWN (default 5)
 ANSWER_VOTED_UP (default 10)
 ANSWER_VOTED_DOWN (default 5)
 
-# the requirements to vote on questions & answers
+# the requirements to vote on questions & answers, as well as leave comments
 VOTE_QUESTION_UP_REP (default 0)
 VOTE_QUESTION_DOWN_REP (default 0)
 VOTE_ANSWER_UP_REP (default 0)
 VOTE_ANSWER_DOWN_REP (default 0)
+LEAVE_COMMENT (default 0)
 
 # the location of the tiny_mce.js file
 TINY_MCE_JS_LOCATION (default 'http://teebes.com/static/js/tiny_mce/tiny_mce.js')

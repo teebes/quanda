@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.contrib.auth.models import User
 
-from quanda.models import Question, QuestionList, QuestionListOrder, QuestionTag, Answer, Profile
+from quanda.models import Question, QuestionList, QuestionListOrder, QuestionTag, Answer, Profile, Comment
 from quanda.utils import strip_js
 
 class QuestionForm(forms.ModelForm):
@@ -134,3 +134,7 @@ class QuestionListAddForm(forms.Form):
 
         return id
 
+class CommentForm(forms.Form):
+    comment_text = forms.CharField(label='', required=True)
+    content_type = forms.CharField(widget=forms.HiddenInput, required=True)
+    object_id = forms.IntegerField(widget=forms.HiddenInput, required=True)

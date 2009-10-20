@@ -3,17 +3,19 @@ import hashlib
 import random
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 
-def get_posted_date(obj):
-    delta = datetime.datetime.now() - obj.posted
-    if delta.days < 364:
-        format = "%b %d"
-    else:
-        format = "%b %d %y"
-    return u"%s" % obj.posted.strftime(format)
+#def get_posted_date(obj):
+#    delta = datetime.datetime.now() - obj.posted
+#    if delta.days < 364:
+#        format = "%b %d"
+#    else:
+#        format = "%b %d %y"
+#    return u"%s" % obj.posted.strftime(format)
 
 class Profile(models.Model):
     """A user using the Quanda system. This can be an anonymous user."""
@@ -39,8 +41,9 @@ class Question(models.Model):
     last_modified = models.DateTimeField(default=datetime.datetime.now)
     author = models.ForeignKey(User, blank=True, null=True)
     
-    get_posted_date = get_posted_date
+    #get_posted_date = get_posted_date
     objects = QuestionManager()
+    comments = generic.GenericRelation('Comment')
     
     def get_view_count(self):
         return QuestionView.objects.filter(question=self).count()
@@ -109,8 +112,13 @@ class Answer(models.Model):
     last_modified = models.DateTimeField(default=datetime.datetime.now)
     author = models.ForeignKey(User)
     user_chosen = models.BooleanField(default=False)
+
+    comments = generic.GenericRelation('Comment')
     
-    get_posted_date = get_posted_date
+    #get_posted_date = get_posted_date
+    
+
+
     
     def __init__(self, *args, **kwargs):
         super(Answer, self).__init__(*args, **kwargs)
@@ -135,3 +143,16 @@ class AnswerVote(models.Model):
     user = models.ForeignKey(User)
     answer = models.ForeignKey(Answer, related_name='answervotes')
     score = models.IntegerField(default=0)
+
+class Comment(models.Model):
+    user = models.ForeignKey(User)
+    comment_text = models.TextField(blank=False)
+    posted = models.DateTimeField(default=datetime.datetime.now())
+    ip = models.CharField(max_length=40, blank=False)
+    
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        ordering = ['posted']

@@ -9,8 +9,9 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
-from quanda.forms import QuestionForm, QuestionTagForm, QuestionListForm, QuestionListOrderForm, QuestionListAddForm, AnswerForm, RepForm, ProfileForm
-from quanda.models import Question, QuestionVote, QuestionTag, QuestionList, QuestionListOrder, QuestionView, Answer, AnswerVote, Profile
+import quanda.models
+from quanda.forms import QuestionForm, QuestionTagForm, QuestionListForm, QuestionListOrderForm, QuestionListAddForm, AnswerForm, RepForm, ProfileForm, CommentForm
+from quanda.models import Question, QuestionVote, QuestionTag, QuestionList, QuestionListOrder, QuestionView, Answer, AnswerVote, Profile, Comment
 from quanda.utils import get_user_rep
 
 TINY_MCE_JS_LOCATION = getattr(settings, 'TINY_MCE_JS_LOCATION', 'http://teebes.com/static/js/tiny_mce/tiny_mce.js')
@@ -132,14 +133,41 @@ def question_read(request, question_id=None, msg=None, context={}):
     question = get_object_or_404(Question, pk=question_id)
     
     # user answers question
-    if request.method == "POST":
+    answer_form = AnswerForm(request.user, question)    
+    if request.method == "POST" and request.POST.has_key('answer_question'):
         answer_form = AnswerForm(request.user, question, request.POST)
         if answer_form.is_valid():
             answer = answer_form.save()
             return HttpResponseRedirect(reverse('quanda_question_read', args=[question_id]))
-    else:
-        answer_form = AnswerForm(request.user, question)
-        
+    
+    # ==== comments ====
+    if request.method == "POST" and request.POST.has_key('comment'):
+        # in order to leave a comment, one must be logged in & be the
+        # author of the question or have more rep than the configurable
+        # requirement to leave comments        
+        if request.user.is_authenticated():
+            required_rep = getattr(settings, 'LEAVE_COMMENT', 0)
+            if get_user_rep(request.user.username) >= required_rep:
+                comment_form = CommentForm(request.POST)
+                if comment_form.is_valid():
+                    # create the comment and redirect         
+                    comment = Comment(
+                        content_object = getattr(
+                            quanda.models,
+                            comment_form.cleaned_data['content_type'],
+                            ).objects.get(pk=comment_form.cleaned_data['object_id']),
+                        comment_text = comment_form.cleaned_data['comment_text'],
+                        posted = datetime.datetime.now(),
+                        user = request.user,
+                        ip = request.META['REMOTE_ADDR'],
+                    )
+                    comment.save()
+                    return HttpResponseRedirect(reverse('quanda_question_read', args=[question_id]))
+            else:
+                context['msg'] = "You must have at least %s reputation in order to leave comments " % required_rep
+        else:
+            context['msg'] = "You must be logged in to comment"
+
     # get how the user previously voted on this question
     try:
         user_question_previous_vote = QuestionVote.objects.get(question=question, user=request.user).score
@@ -147,7 +175,11 @@ def question_read(request, question_id=None, msg=None, context={}):
         user_question_previous_vote = 0
 
     # get questions related to this one
-    related_questions = Question.objects.filter(tags__id__in=question.tags.all()).distinct().order_by('-posted')
+    related_questions = Question.objects\
+                        .filter(tags__id__in=question.tags.all())\
+                        .exclude(pk=question.id)\
+                        .distinct()\
+                        .order_by('-posted')
 
     answers_q = Answer.objects\
                 .filter(question=question)\
@@ -156,19 +188,26 @@ def question_read(request, question_id=None, msg=None, context={}):
                 .order_by('-score')\
                 .order_by('-user_chosen')    
 
-    # This block defines an 'answers' list of Answer objects with an extra
-    # 'user_prev_vote' attribute indicating the user's last vote on that answer
+    user_answered_question = False # whether this user answered the question    
     answers = []
-    user_answered_question = False # whether this user answered the question
     for answer in answers_q:
+        # did the user answer the question?
         if answer.author == request.user:
             user_answered_question = True
+        
+        # indicates the user's last vote on this answer
         try:
             answer_vote = AnswerVote.objects.get(answer=answer, user=request.user).score
         except Exception:
             answer_vote = 0
         answer.user_prev_vote = answer_vote
+        
+        answer.comment_form = CommentForm(initial={'content_type': 'Answer', 'object_id': answer.id})        
+        
         answers.append(answer)
+
+    # add comment form to the question
+    question.comment_form = CommentForm(initial={'content_type': 'Question', 'object_id': question.id})
 
     context['question'] = question
     context['user_question_previous_vote'] = user_question_previous_vote
